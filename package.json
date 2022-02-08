@@ -45,13 +45,8 @@
         "category": "JSCAD"
       },
       {
-        "command": "jscad.exportAsSTL",
-        "title": "Export JSCAD as STL",
-        "category": "JSCAD"
-      },
-      {
-        "command": "jscad.importPathFromSVG",
-        "title": "Import path from SVG file",
+        "command": "jscad.renderSTL",
+        "title": "Render STL",
         "category": "JSCAD"
       }
     ],
