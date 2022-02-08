@@ -30,6 +30,11 @@ export function activate(context: vscode.ExtensionContext) {
     });
   }
 
+  function webviewFinishLoading(uri: string) {
+    const sourceUri = vscode.Uri.parse(uri);
+    previewer.updateSCAD(sourceUri);
+  }
+
 
 
   // create and register our editor controller
@@ -43,9 +48,15 @@ export function activate(context: vscode.ExtensionContext) {
   const intellisenseProvider = new JSCADIntellisenseProvider();
 
   // add commands
-  const previewCommand = vscode.commands.registerCommand('jscad.openPreview', openPreview);
 
-  context.subscriptions.push(previewCommand);
+  context.subscriptions.push(vscode.commands.registerCommand('jscad.openPreview', openPreview));
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "_jscad.webviewFinishLoading",
+      webviewFinishLoading,
+    ),
+  );
 
   const exportSTLCommand = vscode.commands.registerCommand('jscad.exportAsSTL', async () => {
     // @NOTE: I am unsure whether this should be a Task instead. We are actually building something

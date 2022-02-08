@@ -181,6 +181,9 @@ export class Previewer {
 
     }
 
+    const text = editor.document.getText();
+    previewPanel.webview.html = this.getWebViewHtml();
+    previewPanel.webview.postMessage({ command: 'setData', data: { data: text, fileName: sourceUri } });
 
   }
 
@@ -295,7 +298,7 @@ export class Previewer {
    * @param data JSCAD code to be executed
    * @param fileName Filename shown inside the preview
    */
-  public setJscadData(data: string, fileName?: string) {
+  public updateSCAD(data: string, fileName?: string) {
     const displayName: string = fileName ? path.basename(fileName) : '';
 
     // TODO
@@ -310,7 +313,7 @@ export class Previewer {
     // this._panel.webview.html = this._getHtmlForWebview(state);
   }
 
-  private _getHtmlForWebview(state: any = {}) {
+  private getWebViewHtml() {
     // Local path to main script run in the webview
     const jscadCoreScript = Uri.file(path.join(this._extensionPath, 'media', 'dist/jscad-web-opt.js'));
     const jscadEditorScript = Uri.file(path.join(this._extensionPath, 'media', 'jscad-editor-main.js'));
