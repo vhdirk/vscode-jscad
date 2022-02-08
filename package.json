@@ -40,6 +40,11 @@
         "category": "JSCAD"
       },
       {
+        "command": "jscad.openPreviewToTheSide",
+        "title": "Preview JSCAD to the side",
+        "category": "JSCAD"
+      },
+      {
         "command": "jscad.exportAsSTL",
         "title": "Export JSCAD as STL",
         "category": "JSCAD"

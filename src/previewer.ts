@@ -132,18 +132,6 @@ export class Previewer {
         localResourceRoots,
       });
 
-      // register previewPanel message events
-      previewPanel.webview.onDidReceiveMessage(
-        (message) => {
-          vscode.commands.executeCommand(
-            `_mume.${message.command}`,
-            ...message.args,
-          );
-        },
-        null,
-        this.context.subscriptions,
-      );
-
     // Handle messages from the webview
       previewPanel.webview.onDidReceiveMessage(message => {
         console.log('JSCACPreviewPanel: received message', message);
@@ -181,8 +169,8 @@ export class Previewer {
 
     }
 
-    const text = editor.document.getText();
     previewPanel.webview.html = this.getWebViewHtml();
+    const text = editor.document.getText();
     previewPanel.webview.postMessage({ command: 'setData', data: { data: text, fileName: sourceUri } });
 
   }

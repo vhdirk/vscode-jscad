@@ -30,10 +30,24 @@ export function activate(context: vscode.ExtensionContext) {
     });
   }
 
-  function webviewFinishLoading(uri: string) {
-    const sourceUri = vscode.Uri.parse(uri);
-    previewer.updateSCAD(sourceUri);
+  function openPreviewToTheSide(uri?: vscode.Uri) {
+    let resource = uri;
+    if (!(resource instanceof vscode.Uri)) {
+      if (vscode.window.activeTextEditor) {
+        // we are relaxed and don't check for markdown files
+        resource = vscode.window.activeTextEditor.document.uri;
+      }
+    }
+    previewer.initPreview(resource as vscode.Uri, vscode.window.activeTextEditor as vscode.TextEditor, {
+      viewColumn: vscode.ViewColumn.Two,
+      preserveFocus: true,
+    });
   }
+
+  // function webviewFinishLoading(uri: string) {
+  //   const sourceUri = vscode.Uri.parse(uri);
+  //   previewer.updateSCAD(sourceUri);
+  // }
 
 
 
@@ -50,13 +64,19 @@ export function activate(context: vscode.ExtensionContext) {
   // add commands
 
   context.subscriptions.push(vscode.commands.registerCommand('jscad.openPreview', openPreview));
-
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "_jscad.webviewFinishLoading",
-      webviewFinishLoading,
+      "jscad.openPreviewToTheSide",
+      openPreviewToTheSide,
     ),
   );
+
+  // context.subscriptions.push(
+  //   vscode.commands.registerCommand(
+  //     "_jscad.webviewFinishLoading",
+  //     webviewFinishLoading,
+  //   ),
+  // );
 
   const exportSTLCommand = vscode.commands.registerCommand('jscad.exportAsSTL', async () => {
     // @NOTE: I am unsure whether this should be a Task instead. We are actually building something
