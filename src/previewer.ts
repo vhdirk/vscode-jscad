@@ -1,6 +1,7 @@
 import { tmpdir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import fs from 'fs';
 import {
   window,
   workspace,
@@ -13,6 +14,12 @@ import {
   Event,
   EventEmitter,
 } from 'vscode';
+
+import { getDesignEntryPoint, getDesignName } from '@jscad/core/src/code-loading/requireDesignUtilsFs';
+import { loadDesign } from '@jscad/core/src/code-loading/loadDesign';
+
+import { Worker } from 'worker_threads';
+import { join } from 'path';
 
 /**
  * Manages cat coding webview panels
@@ -31,6 +38,7 @@ export class Previewer {
   private _statusBarItem: StatusBarItem = window.createStatusBarItem(StatusBarAlignment.Left);
 
   private onDidInitializeEmitter = new EventEmitter<void>();
+  protected worker: Worker;
 
   // public static revive(panel: WebviewPanel, extensionPath: string, state: any): JSCADPreviewPanel {
   //   console.log('JSCADPreviewPanel.revive');
@@ -41,6 +49,7 @@ export class Previewer {
 
   public constructor(private context: vscode.ExtensionContext) {
     this._extensionPath = context.extensionPath;
+    this.worker = new Worker(join(__dirname, 'worker.js'));
   }
 
   private getProjectDirectoryPath(
@@ -83,6 +92,20 @@ export class Previewer {
       );
     }
     return pathString;
+  }
+
+  private getDesign(paths) {
+    const mainPath = getDesignEntryPoint(fs, paths);
+    const filePath = paths[0];
+    const designName = getDesignName(fs, paths);
+    const designPath = path.dirname(filePath);
+
+    return {
+      name: designName,
+      path: designPath,
+      mainPath
+    };
+
   }
 
   public async initPreview(sourceUri: vscode.Uri,
@@ -171,7 +194,22 @@ export class Previewer {
 
     previewPanel.webview.html = this.getWebViewHtml();
     const text = editor.document.getText();
-    previewPanel.webview.postMessage({ command: 'setData', data: { data: text, fileName: sourceUri } });
+
+    const des = loadDesign(sourceUri.fsPath, )
+    const design = this.getDesign([sourceUri.fsPath]);
+
+    const filesAndFolders = [
+      {
+        ext: sourceUri.fsPath,
+        fullPath: sourceUri.fsPath,
+        name: design.name,
+        source: text
+      }
+    ]
+
+    console.log(design);
+
+    previewPanel.webview.postMessage({ command: 'setData', data: { data: text, design } });
 
   }
 
@@ -303,13 +341,11 @@ export class Previewer {
 
   private getWebViewHtml() {
     // Local path to main script run in the webview
-    const jscadCoreScript = Uri.file(path.join(this._extensionPath, 'media', 'dist/jscad-web-opt.js'));
-    const jscadEditorScript = Uri.file(path.join(this._extensionPath, 'media', 'jscad-editor-main.js'));
-    const jscadEditorCSS = Uri.file(path.join(this._extensionPath, 'media', 'jscad-editor.css'));
+    const jscadScript = Uri.file(path.join(this._extensionPath, 'dist', 'webview-preview.js'));
+    const jscadEditorCSS = Uri.file(path.join(this._extensionPath, 'media', 'preview.css'));
 
     // And the uri we use to load this script in the webview
-    const coreScriptUri = jscadCoreScript.with({ scheme: 'vscode-resource' });
-    const editorScriptUri = jscadEditorScript.with({ scheme: 'vscode-resource' });
+    const jscadScriptUri = jscadScript.with({ scheme: 'vscode-resource' });
     const cssUri = jscadEditorCSS.with({ scheme: 'vscode-resource' });
 
     // Use a nonce to whitelist which scripts can be run (@FIXME: temporarily removed)
@@ -331,29 +367,9 @@ export class Previewer {
       <meta name="jscad-config" content='${JSON.stringify(options)}' />
     </head>
     <body>
-      <div class="jscad-container">
-        <div id="header">
-          <div id="errordiv"></div>
-        </div>
+      <div id='jscad'></div>
 
-        <div id="jscad-viewer-controls">
-          <div class="jscad-viewer-button jscad-viewer-button-scene" data-action-viewport="scene" title="Reset to perspective view"></div>
-          <div class="jscad-viewer-button jscad-viewer-button-top" data-action-viewport="top" title="View from top (look down Z axis)"></div>
-          <div class="jscad-viewer-button jscad-viewer-button-front" data-action-viewport="front" title="View from front (look along X axis)"></div>
-          <div class="jscad-viewer-button jscad-viewer-button-right" data-action-viewport="right" title="View from right (look along Y axis)"></div>
-        </div>
-
-        <!-- setup display of the viewer, i.e. canvas -->
-        <div id="viewerContext"></div>
-
-        <!-- setup display of the status, as required by OpenJSCAD.js -->
-        <div id="tail" style="display: none;">
-          <div id="statusdiv"></div>
-        </div>
-      </div>
-
-      <script nonce="${nonce}" src="${coreScriptUri}"></script>
-      <script nonce="${nonce}" src="${editorScriptUri}"></script>
+      <script nonce="${nonce}" src="${jscadScriptUri}"></script>
     </body>
 
     </html>`;

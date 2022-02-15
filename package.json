@@ -14,7 +14,7 @@
     "onCommand:jscad.openPreview",
     "onWebviewPanel:jscad"
   ],
-  "main": "./out/extension.js",
+  "main": "./dist/extension",
   "contributes": {
     "configurationDefaults": {},
     "configuration": {
@@ -84,17 +84,36 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack --mode development",
+    "compile:test": "npx tsc -p tsconfig.test.json",
+    "compile:node": "webpack --mode development --config-name extension:node --config-name webviews",
+    "compile:web": "webpack --mode development --config-name extension:webworker --config-name webviews",
+    "watch": "webpack --watch --mode development",
+    "bundle": "webpack --mode production",
+    "package": "npx vsce package --npm",
+    "watch-tests": "npx tsc -p . -w --outDir out",
+    "lint": "eslint --fix --cache --config .eslintrc.json --ignore-pattern src/env/browser/**/* \"{src,webviews}/**/*.{ts,tsx}\"",
+    "test:preprocess": "npm run compile:test",
+    "test": "npm run test:preprocess && node ./out/src/test/runTests.js"
   },
   "dependencies": {
     "@jscad/cli": "^2.2.13",
+    "@jscad/core": "^2.5.3",
+    "@jscad/csg": "^0.7.0",
+    "@jscad/desktop": "^0.7.1",
+    "@jscad/openscad-openjscad-translator": "^0.0.11",
+    "@jscad/scad-deserializer": "^1.0.0-alpha.d0fb3056",
+    "@jscad/web": "^2.5.3",
     "debounce": "^1.2.1",
-    "svg-parser": "^2.0.4"
+    "lit": "^2.1.3",
+    "most-gestures": "^0.4.1",
+    "nanohtml": "^1.9.1",
+    "svg-parser": "^2.0.4",
+    "url": "^0.11.0",
+    "vscode-page": "^0.0.1",
+    "webworkify": "^1.5.0",
+    "webworkify-webpack": "^2.1.5"
   },
   "devDependencies": {
     "@types/debounce": "^1.2.1",
@@ -103,12 +122,29 @@
     "@types/node": "14.x",
     "@types/svg-parser": "^2.0.3",
     "@types/vscode": "^1.64.0",
+    "@types/webpack-env": "^1.16.0",
     "@typescript-eslint/eslint-plugin": "^5.9.1",
     "@typescript-eslint/parser": "^5.9.1",
     "@vscode/test-electron": "^2.0.3",
+    "@vscode/test-web": "^0.0.22",
+    "constants-browserify": "^1.0.0",
+    "crypto-browserify": "3.12.0",
+    "css-loader": "5.1.3",
+    "esbuild-loader": "2.10.0",
     "eslint": "^8.6.0",
+    "fork-ts-checker-webpack-plugin": "6.2.6",
     "glob": "^7.2.0",
+    "jsdom-global": "^3.0.2",
     "mocha": "^9.1.3",
-    "typescript": "^4.5.4"
+    "os-browserify": "^0.3.0",
+    "path-browserify": "1.0.1",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
+    "terser-webpack-plugin": "5.1.1",
+    "timers-browserify": "^2.0.12",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.4",
+    "webpack": "5.68.0",
+    "webpack-cli": "4.2.0"
   }
 }
