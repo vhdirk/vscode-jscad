@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src vscode-resource: https:; script-src 'nonce-${nonce}'; style-src 'nonce-${nonce}';"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <link rel="stylesheet" href="${cssUri}" nonce="${nonce}" type="text/css">
+      <meta name="jscad-config" content='${JSON.stringify(options)}' /> -->
+    <script
+      language="javascript">
+    window.acquireVsCodeApi = function() {
+        return null;
+    }
+    </script>
+
+    <script
+      language="javascript"
+      src="../dist/webview-preview.js"
+    ></script>
+  </head>
+  <body>
+
+    <cad-preview id='preview'></cad-preview>
+
+    <!-- <div class="jscad-container">
+        <div id="header">
+          <div id="errordiv"></div>
+        </div>
+
+        <div id="jscad-viewer-controls">
+          <div class="jscad-viewer-button jscad-viewer-button-scene" data-action-viewport="scene" title="Reset to perspective view"></div>
+          <div class="jscad-viewer-button jscad-viewer-button-top" data-action-viewport="top" title="View from top (look down Z axis)"></div>
+          <div class="jscad-viewer-button jscad-viewer-button-front" data-action-viewport="front" title="View from front (look along X axis)"></div>
+          <div class="jscad-viewer-button jscad-viewer-button-right" data-action-viewport="right" title="View from right (look along Y axis)"></div>
+        </div> -->
+
+    <!-- setup display of the viewer, i.e. canvas -->
+    <!-- <div id="viewerContext"></div> -->
+
+    <!-- setup display of the status, as required by OpenJSCAD.js -->
+    <!-- <div id="tail" style="display: none;">
+          <div id="statusdiv"></div>
+        </div>
+      </div> -->
+<!--
+    <script nonce="${nonce}" src="${coreScriptUri}"></script>
+    <script nonce="${nonce}" src="${editorScriptUri}"></script> -->
+  </body>
+</html>

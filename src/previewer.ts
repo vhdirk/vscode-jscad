@@ -1,7 +1,7 @@
 import { tmpdir } from 'os';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import fs from 'fs';
+import * as fs from 'fs';
 import {
   window,
   workspace,

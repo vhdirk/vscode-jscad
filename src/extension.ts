@@ -19,34 +19,33 @@ class Extension {
     constructor(protected context: vscode.ExtensionContext) {
         this.previewer = new Previewer(context);
         this.exporter = new Exporter(context);
+    }
 
+    getResource(uri?: vscode.Uri): vscode.Uri {
+        if (!(uri instanceof vscode.Uri)) {
+            if (vscode.window.activeTextEditor) {
+                // we are relaxed and don't check for markdown files
+                return vscode.window.activeTextEditor.document.uri;
+            }
+        }
+        return uri as vscode.Uri;
     }
 
     async openPreview(uri?: vscode.Uri) {
         console.log('jscad.openPreview: command runs');
 
-        let resource = uri;
-        if (!(resource instanceof vscode.Uri)) {
-            if (vscode.window.activeTextEditor) {
-                // we are relaxed and don't check for markdown files
-                resource = vscode.window.activeTextEditor.document.uri;
-            }
-        }
-        this.previewer.initPreview(resource as vscode.Uri, vscode.window.activeTextEditor as vscode.TextEditor, {
+        const resource = this.getResource(uri);
+
+        this.previewer.initPreview(resource, vscode.window.activeTextEditor as vscode.TextEditor, {
             viewColumn: vscode.ViewColumn.One,
             preserveFocus: false,
         });
     }
 
     async openPreviewToTheSide(uri?: vscode.Uri) {
-        let resource = uri;
-        if (!(resource instanceof vscode.Uri)) {
-            if (vscode.window.activeTextEditor) {
-                // we are relaxed and don't check for markdown files
-                resource = vscode.window.activeTextEditor.document.uri;
-            }
-        }
-        this.previewer.initPreview(resource as vscode.Uri, vscode.window.activeTextEditor as vscode.TextEditor, {
+        const resource = this.getResource(uri);
+
+        this.previewer.initPreview(resource, vscode.window.activeTextEditor as vscode.TextEditor, {
             viewColumn: vscode.ViewColumn.Two,
             preserveFocus: true,
         });
@@ -57,15 +56,9 @@ class Extension {
         // but on the other hand this is just a simple export :-| ... should check how other extensions
         // solve this (e.g. less/sass, etc)
 
-        let resource = uri;
-        if (!(resource instanceof vscode.Uri)) {
-            if (vscode.window.activeTextEditor) {
-                // we are relaxed and don't check for markdown files
-                resource = vscode.window.activeTextEditor.document.uri;
-            }
-        }
+        const resource = this.getResource(uri);
 
-        await this.exporter.exportSTL(resource as vscode.Uri);
+        await this.exporter.exportSTL(resource);
 
         //   // get active editor
         //   const editor = vscode.window.activeTextEditor;
@@ -98,19 +91,6 @@ export function activate(context: vscode.ExtensionContext) {
     // create and register our editor controller
     const controller = new JSCADEditorController();
     context.subscriptions.push(controller);
-
-    // create our exporter (@TODO: dispose)
-    // const exporter = new JSCADExporter(context);
-
-
-
-
-    // function webviewFinishLoading(uri: string) {
-    //   const sourceUri = vscode.Uri.parse(uri);
-    //   previewer.updateSCAD(sourceUri);
-    // }
-
-
 
     // register our custom intellisense provider
     const intellisenseProvider = new JSCADIntellisenseProvider();

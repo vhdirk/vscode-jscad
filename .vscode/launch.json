@@ -8,7 +8,6 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--disable-extension=GitHub.vscode-pull-request-github-insiders"
 			],
 			"skipFiles": [
 				"<node_internals>/**/*.js",
@@ -17,7 +16,7 @@
 			"smartStep": true,
 			"sourceMaps": true,
 			"outFiles": [
-				"${workspaceFolder}/dist/*.js"
+				"${workspaceFolder}/out/**/*.js"
 			]
 		},
 		{
@@ -27,7 +26,7 @@
 			"runtimeExecutable": "${execPath}",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--disable-extension=GitHub.vscode-pull-request-github-insiders"
+				"--extensionTestsPath=${workspaceFolder}/out/test/index"
 			],
 			"skipFiles": [
 				"<node_internals>/**/*.js",
@@ -37,7 +36,7 @@
 			"smartStep": true,
 			"sourceMaps": true,
 			"outFiles": [
-				"${workspaceFolder}/dist/*.js"
+				"${workspaceFolder}/out/**/*.js"
 			]
 		},
 	],

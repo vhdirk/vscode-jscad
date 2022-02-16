@@ -3,6 +3,7 @@
   "displayName": "jscad",
   "description": "JSCAD preview",
   "version": "0.0.1",
+  "publisher": "vhdirk",
   "engines": {
     "vscode": "^1.64.0"
   },
@@ -14,7 +15,7 @@
     "onCommand:jscad.openPreview",
     "onWebviewPanel:jscad"
   ],
-  "main": "./dist/extension",
+  "main": "./out/extension.js",
   "contributes": {
     "configurationDefaults": {},
     "configuration": {
@@ -84,18 +85,12 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run package",
-    "compile": "webpack --mode development",
-    "compile:test": "npx tsc -p tsconfig.test.json",
-    "compile:node": "webpack --mode development --config-name extension:node --config-name webviews",
-    "compile:web": "webpack --mode development --config-name extension:webworker --config-name webviews",
-    "watch": "webpack --watch --mode development",
-    "bundle": "webpack --mode production",
-    "package": "npx vsce package --npm",
-    "watch-tests": "npx tsc -p . -w --outDir out",
-    "lint": "eslint --fix --cache --config .eslintrc.json --ignore-pattern src/env/browser/**/* \"{src,webviews}/**/*.{ts,tsx}\"",
-    "test:preprocess": "npm run compile:test",
-    "test": "npm run test:preprocess && node ./out/src/test/runTests.js"
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
   },
   "dependencies": {
     "@jscad/cli": "^2.2.13",
@@ -118,6 +113,7 @@
   "devDependencies": {
     "@types/debounce": "^1.2.1",
     "@types/glob": "^7.2.0",
+    "@types/jsdom-global": "^3.0.2",
     "@types/mocha": "^9.0.0",
     "@types/node": "14.x",
     "@types/svg-parser": "^2.0.3",

@@ -1,14 +1,14 @@
 import * as vscode from 'vscode';
-import fs from 'fs';
+import * as fs from 'fs';
 import { formats } from '@jscad/io/formats';
 
 import { version as JSCADVersion } from '@jscad/core';
 
-import generateOutputData from '@jscad/cli/src/generateOutputData';
 import determineOutputNameAndFormat from '@jscad/cli/src/determineOutputNameAndFormat';
 import writeOutput from '@jscad/cli/src/writeOutput';
 import parseArgs from '@jscad/cli/src/parseArgs';
 import path, { extname } from 'path';
+import { generateOutputData } from './generateOutputData';
 
 const clicolors = {
     red: '\u{1b}[31m',
@@ -28,13 +28,22 @@ export class Exporter {
     }
 
     async exportSTL(resource: vscode.Uri) {
+        const inputFile = resource.fsPath;
+        const inputExtension = extname(inputFile).substring(1);
+
+        // const filesAndFolders = [
+        //     {
+        //         ext: 'js',
+        //         fullPath: fakePath,
+        //         name: fakeName,
+        //         source: data.source
+        //     }
+        // ]
 
         // // handle arguments (inputs, outputs, etc)
         // const args = process.argv.splice(2)
         // let { inputFile, inputFormat, outputFile, outputFormat, params, addMetaData, inputIsDirectory } = parseArgs(args)
 
-        const inputFile = resource.fsPath;
-        const inputFormat = extname(inputFile).substring(1);
 
         let outputFormat = "stl";
         let outputFile = path.format({ ...path.parse(inputFile), base: '', ext: '.' + outputFormat });
@@ -61,12 +70,14 @@ export class Exporter {
 
         // -- convert from JSCAD script into the desired output format
         // -- and write it to disk
-        await generateOutputData(src, params, { outputFile, outputFormat, inputFile, inputFormat, version, addMetaData, inputIsDirectory })
-            .then((outputData) => writeOutput(outputFile, outputData))
+
+        await generateOutputData(src, params, { outputFile, outputFormat, inputFile, inputFormat: inputExtension, version, addMetaData, inputIsDirectory })
+            .then((outputData) =>
+                writeOutput(outputFile, outputData))
             .catch((error) => {
                 console.error(error);
-                process.exit(1);
             });
+
 
     }
 

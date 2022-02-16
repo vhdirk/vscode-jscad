@@ -7,7 +7,7 @@ import { EXTENSION_ID } from '../constants';
 
 function addTests(mocha: Mocha, root: string): Promise<void> {
 	return new Promise((resolve, reject) => {
-		glob('**/**.test.js', { cwd: root }, (error, files) => {
+		glob('**/**.test.js', { cwd: root }, (error: any, files: any) => {
 			if (error) {
 				return reject(error);
 			}

@@ -13,13 +13,13 @@ beforeEach(function () {
         consoleErrors?: string[];
     };
     console.log = function captureLog() {
-        original.log.apply(console, arguments);
-        const formatted = util.format.apply(util, arguments);
+        original.log.apply(console, arguments as any);
+        const formatted = util.format.apply(util, arguments as any);
         currentTest.consoleOutputs = (currentTest.consoleOutputs || []).concat(formatted);
     };
     console.error = function captureError() {
-        original.error.apply(console, arguments);
-        const formatted = util.format.apply(util, arguments);
+        original.error.apply(console, arguments as any);
+        const formatted = util.format.apply(util, arguments as any);
         currentTest.consoleErrors = (currentTest.consoleErrors || []).concat(formatted);
     };
 });
