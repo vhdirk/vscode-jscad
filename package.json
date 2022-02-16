@@ -1,8 +1,13 @@
 {
   "name": "jscad",
   "displayName": "jscad",
+  "publisher": "vhdirk",
   "description": "JSCAD preview",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vhdirk/vscode-jscad"
+  },
   "engines": {
     "vscode": "^1.64.0"
   },
